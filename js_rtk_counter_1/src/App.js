@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/header";
 import MainPage from "./pages/main-page";
-
+import TodoPage from "./pages/todo-page"
 
 function App() {
   return (
@@ -11,6 +11,8 @@ function App() {
 
         <Routes>
           <Route index element={<MainPage />} />
+
+          <Route path="todo" element={<TodoPage />} />
 
         </Routes>
 
