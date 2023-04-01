@@ -43,7 +43,7 @@ timer = startTimer()
  * Okunması kolay ve anlaşılır yöntem.
  */
 total = numbers.reduce((startValue, currentItem) => {
-    //console.log('Params:', startValue, currentItem)
+    console.log('Params:', startValue, currentItem)
 
     return startValue + currentItem
 }, 0)
