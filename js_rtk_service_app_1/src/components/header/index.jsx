@@ -1,6 +1,70 @@
+import { useContext } from "react";
+import { Badge, Button, FormLabel } from "react-bootstrap";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { AuthTokenContext } from "../context/auth-token-context-provider";
+import { removeUserData } from "../../redux/userSlice";
+import useSwal from "../../hooks/useSwal";
 
 export default function Header() {
+  const userState = useSelector((state) => state.userState);
+  const authTokenContextValue = useContext(AuthTokenContext);
+  const dispatch = useDispatch();
+  const swal = useSwal();
+
+  const logoutUser = () => {
+    localStorage.removeItem("token");
+    authTokenContextValue.setToken(null);
+    dispatch(removeUserData());
+  };
+
+  const onLogoutBtnClick = () => {
+    /**
+     * Çıkış yapmak istediğimizde iki yöntemle çıkış yapabiliriz. Birinci yöntem doğrudan token ve user state'ini
+     * silmek yani hızlı çıkış. İkinci yöntem ise soru sorarak çıkmaktır yani kullanıcıya "Çıkmak istediğinize emin misiniz?"
+     * şeklinde bir soru sorarız ve "Evet" butonuna tıklanırsa o zaman çıkış yaparız. İkinci yöntem de yine
+     * kendi içerisinde ikiye ayrılır. Bu yöntemlere zamanı geldiğinde değineceğiz.
+     */
+
+    // Yorum satırlarını kaldırarak yöntemleri aktif-pasif yapabilirsiniz.
+
+    // Birinci yöntem: Doğrudan çıkış yapalım.
+    //logoutUser();
+
+    // İkinci yöntem: Soru sorduktan sonra çıkış yapalım.
+    // Bu yöntem de kendi içerisinde ikiye ayrılır. Birincisi javascriptin `confirm()` yöntemini kullanmak.
+    // Diğeri de 'sweetalert' kütüphanesini kullanmak.
+
+    // 2.1: confirm() yöntemi. (Çalıştığını görmek için yorumları kaldırın.)
+    //const result = confirm("Çıkış yapmak istiyor musunuz?");
+    //console.log(">> CONFIRM RESULT", result);
+    //if (result === true) {
+    //  logoutUser();
+    //}
+
+    // 2.2: sweetalert yöntemi
+    swal
+      .fire({
+        title: (
+          <p>
+            <h2>Emin misiniz?</h2>
+            <div class="alert alert-danger" role="alert">
+              Çıkış yapmak istiyor musunuz?
+            </div>
+          </p>
+        ),
+        showCancelButton: true,
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          // burada çıkış yap
+          logoutUser();
+        } else {
+          // burada hiçbirşey yapmaya gerek yok.
+        }
+      });
+  };
+
   return (
     <header>
       <div class="d-flex flex-column flex-md-row align-items-center pb-3 mb-4 border-bottom">
@@ -40,18 +104,34 @@ export default function Header() {
           >
             Blogs
           </Link>
-          <Link
-            to="auth/login"
-            class="btn btn-primary me-3 py-2 text-decoration-none"
-          >
-            Giriş Yap
-          </Link>
-          <Link
-            to="auth/register"
-            class="btn btn-primary py-2 text-decoration-none"
-          >
-            Kayıt Ol
-          </Link>
+
+          {userState.userData === null ? (
+            <>
+              <Link
+                to="auth/login"
+                class="btn btn-primary me-3 py-2 text-decoration-none"
+              >
+                Giriş Yap
+              </Link>
+              <Link
+                to="auth/register"
+                class="btn btn-primary py-2 text-decoration-none"
+              >
+                Kayıt Ol
+              </Link>
+            </>
+          ) : (
+            <>
+              <Badge className="p-3 bg-danger me-3">
+                <i className="fa-solid fa-user me-2"></i>
+                {userState.userData.fullname}
+              </Badge>
+              <Button variant="success" onClick={onLogoutBtnClick}>
+                <i className="fa-solid fa-right-from-bracket me-2"></i>
+                Çıkış Yap
+              </Button>
+            </>
+          )}
         </nav>
       </div>
     </header>

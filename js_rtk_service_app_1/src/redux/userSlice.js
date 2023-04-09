@@ -1,7 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    userData: null
+    userData: null,
+    token: null,
 }
 
 export const userSlice = createSlice({
@@ -13,6 +14,10 @@ export const userSlice = createSlice({
 
             state.userData = action.payload
         },
+
+        /**
+         * Aslında bunun diğer anlamı (veya diğer ismi) `logoutUser` diyebiliriz.
+         */
         removeUserData: (state) => {
             state.userData = null
         }
@@ -26,5 +31,3 @@ export const {
 } = userSlice.actions
 
 export default userSlice.reducer
-
-

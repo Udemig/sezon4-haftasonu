@@ -3,10 +3,15 @@ import { Button, Col, Form, Row } from "react-bootstrap";
 import useApi from "../../hooks/useApi";
 import { toast } from "react-toastify";
 import { AuthTokenContext } from "../../components/context/auth-token-context-provider";
+import { useDispatch } from "react-redux";
+import { setUserData } from "../../redux/userSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const api = useApi();
   const authTokenContextValue = useContext(AuthTokenContext);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   /**
    * Bir inputtan data almak için birkaç tane yöntem vardır. Bu yöntemler amatörden profesyonele
@@ -64,9 +69,26 @@ export default function LoginPage() {
       .then((response) => {
         console.log(">> Api Resp", response);
 
+        /**
+         * Api'den cevap geldiğinde token bilgisini context'e gönder, kullanıcı bilgisini de
+         * state'e gönder.
+         */
         authTokenContextValue.setToken(response.data.data.token);
+        dispatch(setUserData(response.data.data.userData));
 
         toast("Başarıyla giriş yapıldı.");
+
+        // Kullanıcı login olduktan sonra login ekranında beklememesi gerekiyor.
+        // Yani anasayfaya yönlendirmemiz gerekiyor. Yine bunu da yapmak için
+        // iki yöntem var. Birinci yöntem `document.location` set etmek. Ama bu yöntem
+        // önemli yan etkileri olan ve pek tercih edilmeyen amatör bir yöntemdir.
+        // İkinci yöntem ise react-router-dom kullanarak yönlendirmek.
+
+        // Birinci yöntem:
+        //document.location = '/'
+
+        // İkinci yöntem navigate yöntemi:
+        navigate("/");
       })
       .catch((err) => {
         console.error(err);
