@@ -108,7 +108,15 @@ export default function LoginPage() {
 
   return (
     <>
-      <form onSubmit={onFormSubmit}>
+      <form id={"form_" + Date.now()} onSubmit={onFormSubmit}>
+        <input autocomplete="off" type="email" value="" className="d-none" />
+        <input
+          autocomplete="new-password"
+          type="password"
+          value=""
+          className="d-none"
+        />
+
         <Row className="justify-content-center">
           <Col sm="12" lg="4">
             <div className="form-group mb-3">
