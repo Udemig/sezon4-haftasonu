@@ -183,6 +183,30 @@ const result_kebab_case = stringCaseChanger(
 );
 console.log(">> Result 2", result_kebab_case);
 
+const result_pascal_case = stringCaseChanger(
+  " örnek yazı burası",
+  function (s: string): string {
+    return s;
+  }
+);
+
+// normal function: isimli fonksiyon
+// anonymous functionlar: arrow function ve nameless function.
+
+// normal function tanımlama yöntemi
+function example_function() {}
+
+// arrow function tanımlama yöntemi
+const example_arrow_function = () => {};
+
+// nameless function tanımlama yöntemi
+const example_nameless_function = function (
+  param1: string,
+  param2: number
+): string {
+  return "example string value";
+};
+
 /**
  * Fonksiyon parametresine fonksiyon gönderme işlemini daha önceden sıklıkla
  * yapıyorduk. Örneğin dizilerdeki map, filter, forEach gibi fonksiyonlara
@@ -203,3 +227,155 @@ current_class
   });
 
 // 2.2. Fonksiyonun dönüş türünün fonksiyon olması durumu
+
+/**
+ * React'ta hook kuralları:
+ * 1- hooklar mutlaka bir component içerisinde kullanılmalı.
+ * 2- hooklar mutlaka en üst bölümde yer almalı ve herhangi bir dallanma ifadesi içerisinde kullanılmamalı.
+ * 3- hooklar `use` ifadesiyle başlar ve fonksiyon isimleri camel case olmalıdır (yani `use` ifadesi küçük,
+ *    sonraki kelimelerin ilk harfi büyük olmalı).
+ *
+ */
+
+// Fonksiyonel programlama dillerinde her fonksiyon her fonksiyonu çağırabilir. Bu eğer kontrol altında
+// tutulmazsa sürekli birbirlerini çağıran fonksiyonlar yazılması problemine sebebiyet verebilir.
+// Fonksiyonlar sürekli birbirini çağırdığında sonsuz döngüye girilmiş olur ve yazılım crash olur.
+// Örneğin aşağıdaki fonksiyonlar sürekli birbirlerini çağırmaktalar. Eğer bu kodu çalıştırırsanız
+// programınız crash olur.
+// function test1() {
+//   test2()
+// }
+// function test2() {
+//   test1()
+// }
+// test1()
+// test2()
+
+// useState fonksiyonu bir tuple dönderir, bu tuple değerinin ilk değeri değişken,
+// ikinci değeri de bir fonksiyondur.
+// const [counter, setCounter] = useState(0)
+// counter: bu değişkendir
+// setCounter: bu fonksiyondur
+// useState hook'unun örnek geri dönüş türü aşağıdaki gibi olabilir:
+// [variable: any, setCounter: Function]
+
+/**
+ * Bir fonksiyondan başka bir fonksiyon dönderme işlemi bazı spesifik durumlarda çok büyük iş gören bir
+ * yöntemdir. Örneğin reactjs'de oluşturulan bir hook'u kullanırken hooktan bir fonksiyon döndererek
+ * normalde yapılamayan işlemleri yaptırabiliriz. Aşağıdaki örnekte useDispatch hooku redux'a ait bir hooktur
+ * ve biz dışarıdan redux'ın oluşturduğu store objesine doğrudan erişemeyiz. Ama useDispatch hookunun içerisinde
+ * bir fonksiyon tanımlayıp bu fonksiyonu dönderdiğimizde bu fonksiyon redux'ın store objesine erişebilir.
+ * Bu sayede özellikle dışarıdan erişimi bulunmayan değişkenleri güncellemek amacıyla içeriden bir
+ * fonksiyon döndermek mantıklı olacaktır.
+ *
+ */
+
+////////// --- SENARYO: useDispatch hook'unu tanımlayın --- //////////
+
+type DispatchFuncType = () => (action: { type: string; payload: any }) => void;
+
+// Senaryo gereği store objesine dışarıdan erişilemediğini düşünelim. Bu durumda store objesini
+// nasıl güncelleriz?
+const store = {
+  userState: null,
+  categoryState: null,
+};
+
+const useDispatch: DispatchFuncType = () => {
+  return (action: { type: string; payload: any }) => {
+    switch (action.type) {
+      case "set_user":
+        store.userState = action.payload;
+        // TODO Tam olarak bu satırda state objesinin güncellendiğinin bilgisini abone olmuş olan diğer
+        // componentlere de bildirmek gerekiyor.
+        return;
+
+      case "set_category":
+        store.categoryState = action.payload;
+        // TODO Tam olarak bu satırda state objesinin güncellendiğinin bilgisini abone olmuş olan diğer
+        // componentlere de bildirmek gerekiyor.
+        return;
+
+      default:
+        return;
+    }
+  };
+};
+
+const dispatch1 = useDispatch();
+const dispatch2 = useDispatch();
+const dispatch3 = useDispatch();
+
+dispatch1({
+  type: "set_user",
+  payload: { id: 1, firstname: "ramazan özbuğanlı" },
+});
+console.log(">> STORE: ", store);
+
+dispatch2({
+  type: "set_category",
+  payload: {
+    categories: [
+      { id: 1, title: "Devops eğitimi" },
+      { id: 2, title: "Reactjs eğitimi" },
+    ],
+  },
+});
+console.log(">> STORE: ", store);
+
+/**
+ * Soru: store objesini değiştirmek için doğrudan useDispatch() fonksiyonunu kullansak olmaz mıydı?
+ * Cevap: Olmazdı. Çünkü useDispatch bir hooktur ve hook kullanım kurallarına göre kullanılmalıdır.
+ *     Hooklar bir şart ifadesi içerisinde kullanılamaz, event callback fonksiyonu içerisinde de
+ *     kullanılamaz. Ama bir hook'un dönderdiği fonksiyonu istediğimiz yerde kullanabiliriz.
+ *     Örneğin önceki derslerde axios'tan gelen cevabı store.categoryState objesine set etmek
+ *     istediğimizde dispatch() fonksiyonunu kullanabiliyorduk. Fakat axios.get().then() fonksiyonu
+ *     içerisinde useDispatch() fonksiyonunu kullanamayız.
+ */
+
+////////// --- SENARYO: useState hook'unu tanımlayın --- //////////
+
+// Dip not: Normalde `any` ifadesini kullanmamak lazım, onun yerine `generic type`  kullanmak lazım ama
+// henüz o konuya gelmediğimiz için heryerde any kullanıyoruz.
+
+type SetterCurrentStateFuncType = (currentState: any) => any;
+
+type UseStateFuncType = (
+  data?: any
+) => [
+  value: any,
+  setterFunc: (param1: any | SetterCurrentStateFuncType) => void
+];
+
+//const [counter, setCounter] = useState()
+const [counter, setCounter] = useState(0);
+const [user, setUser] = useState({
+  id: 1,
+  firstname: "test user",
+});
+
+setCounter(counter + 1);
+setCounter(counter + 1);
+
+setCounter((currentState) => {
+  return currentState + 1;
+});
+
+setCounter((currentState) => {
+  return currentState + 1;
+});
+
+// setUser fonksiyonunu kullanmanın iki yöntemi vardır.
+// birincisi doğrudan değer göndermek
+setUser({
+  id: 2,
+  firstname: "örnek kullanıcı",
+});
+
+// ikincisi fonksiyon göndermek
+setUser((currentState) => {
+  return {
+    ...currentState,
+    firstname: "örnek kullanıcı 2",
+  };
+});
