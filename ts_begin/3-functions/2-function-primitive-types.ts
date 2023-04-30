@@ -1,9 +1,9 @@
 /**
  * Fonksiyonların prototipi fonksiyonun türüdür. Bir fonksiyonun prototipi (türünü)
  * çözümleyebilmek için (veya tespit edebilmek için) iki ana unsura ihtiyaç vardır.
- * Birincisi parametreler, ikincisi dönüş türü.
- *
- * // TODO Bu yorum satırını sonra güncelle.
+ * Birincisi parametreler, ikincisi dönüş türü. Yani aslında inputları ve outputu
+ * belirterek fonksiyon türünü tanımlamış oluruz. Inputlar yani parametreler birden
+ * fazla olabilir, output ise bir tane olmak zorunda (void türü de nihayetinde bir türdür).
  */
 
 // Aşağıdaki fonksiyonun prototipi tam olarak şu şekildedir:
@@ -58,7 +58,7 @@ console.log("sum operation: ", sumOperation(10, 20));
 console.log("subtract operation: ", subtractOperation(10, 20));
 console.log("multiplication op: ", multiplicationOperation(10, 20));
 
-// ÖRNEK 2: Tam isimleri ad-soyad ifadesine çeviren fonksiyon prototipi oluşturalım.
+// ÖRNEK 2: Tam isimleri ad ve soyad bilgilerini ayrı ayrı parçalayıp veren fonksiyon prototipi oluşturalım.
 
 /**
  * Amaç:

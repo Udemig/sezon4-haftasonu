@@ -28,10 +28,15 @@ const calculate_total = (num1: number, num2: number): number => num1 + num2;
 total = calculate_total(30, 40);
 console.log("3. total: ", total);
 
+// 4. yöntem: Nameless function
+const example_fn = function () {
+  return "test";
+};
+
 ///////////////////////////////////////////////
 
 /**
- * Bu bölgeyi mutlaka inceleyin:
+ * ÖDEV: Bu bölgeyi mutlaka inceleyin:
  *
  * Örnek olarak sıklıkla kullandığımız useSelector fonksiyonunu kullanırken
  * single line arrow function ile datayı almak yeterlidir. Ama örneğin şöyle bir
@@ -47,3 +52,22 @@ console.log("3. total: ", total);
 //const authState = useSelector(function getData(state) {
 //  return state.authState;
 //});
+
+let example_function: (
+  p1: number,
+  p2: string
+) => () => (s: string, n: number) => string = (
+  param1: number,
+  param2: string
+) => {
+  console.log("dış fonksiyon çıktısı");
+
+  return () => {
+    console.log("iç fonksiyon çıktısı");
+
+    return (s: string, n: number): string => {
+      console.log("en içteki fonksiyon çıktısı");
+      return s + n;
+    };
+  };
+};

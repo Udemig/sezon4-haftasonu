@@ -10,7 +10,7 @@ let browser: [string, number, string] = ["Chrome", 111, "Mac OS X "];
 browser = ["Firefox", 45, "Windows 11"];
 console.log("Current browser", browser);
 
-let student: [
+let example_student: [
   string,
   string,
   number,
@@ -19,16 +19,16 @@ let student: [
   boolean
 ];
 
-student = ["hüseyin", "kerem", 30, "erkek", "diğer", true];
+example_student = ["hüseyin", "kerem", 30, "erkek", "diğer", true];
 
 // Soru: Tuple'lara push yapılabilir mi?
 // Cevap: Yapılabilir ama bu tuple'ın mantığına aykıdır. Typescript bize bu özelliği veriyor olması
 // bu özelliğin kullanılması gerektiği anlamına gelmez. Eğer genişliği artıp azalması gereken
 // bir diziye ihtiyacınız varsa Tuple yerine normal array kullanırsanız daha sağlıklı olur.
-student.push("testttttt");
+example_student.push("testttttt");
 
-student.map((item, index) => {
-  console.log(">> Student item:", item, index);
+example_student.map((item, index) => {
+  console.log(">> example_student item:", item, index);
 });
 
 let students: object[];

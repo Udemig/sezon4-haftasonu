@@ -333,47 +333,130 @@ console.log(">> STORE: ", store);
  *     içerisinde useDispatch() fonksiyonunu kullanamayız.
  */
 
+console.log("\n\n****************************************************");
+console.log("********** USE STATE HOOK İMPLEMENTASYONU **********");
+console.log("****************************************************\n\n");
+
 ////////// --- SENARYO: useState hook'unu tanımlayın --- //////////
 
 // Dip not: Normalde `any` ifadesini kullanmamak lazım, onun yerine `generic type`  kullanmak lazım ama
 // henüz o konuya gelmediğimiz için heryerde any kullanıyoruz.
 
-type SetterCurrentStateFuncType = (currentState: any) => any;
+let ornek_degisken: any;
+ornek_degisken = undefined;
+ornek_degisken = 10;
+ornek_degisken = null;
+ornek_degisken = { id: 1 };
+ornek_degisken = true;
 
+// dış fonksiyonun prototipi (type'ı)
 type UseStateFuncType = (
-  data?: any
-) => [
-  value: any,
-  setterFunc: (param1: any | SetterCurrentStateFuncType) => void
-];
+  data?: undefined | any
+) => [any, (param1: any | SetterCurrentStateFuncType) => void];
 
-//const [counter, setCounter] = useState()
+// Dış fonksiyondan bir tuple değer döner. Tuple değerleri hatırlayalım:
+type ExampleTupleType = [number, string, object, boolean, () => void];
+
+// iç fonksiyonun prototipi (type'ı)
+type SetterCurrentStateFuncType = (currentState: undefined | any) => any;
+
+// Bu değişken gizli olduğunu düşünelim ve dışarıdan erişime kapalı olduğunu
+// farzedelim. Benzer yöntemi reactjs de uygulamaktadır. Reactjs aslında tüm state'leri
+// kendi bünyesinde gizli bir değişken içerisinde tutar ve bu değişken dışarıya kapalıdır.
+// Farzedelim ki reactjs'nin tüm state'leri sakladığı değişken bu olsun.
+const reactjs_states: any[] = [];
+
+const useState: UseStateFuncType = (
+  // Önce bu bölgeye ne yazacağımızı bulalım. Yukarıdaki türde tanımlandığı gibi yazıyoruz.
+  data?: undefined | any
+) => {
+  /**
+   * Buradaki implementasyonu reactjs'nin yaptığına benzer bir şekilde yapmamız gerekiyor.
+   * Reactjs bizim state'lerimizi kendi içerisinde biryerlerde saklıyor. Biz de benzer
+   * bir mantıkla bu useState hook'una gönderilen değerleri biryerde saklamamız gerekiyor.
+   */
+  // TODO Bu kısımları implement et.
+
+  console.log("useState hook'u çağırıldı, ilk değer: ", data);
+
+  // Javascript single thread çalışır ve garbage collected bir dildir. Bu yüzden `current_index` değişkeni
+  // hafızadan hemen silinmez ve silinmediği için de aşağıdaki iç fonksiyon bloğu içerisinden erişilebilirdir.
+  const current_index = reactjs_states.length;
+  reactjs_states.push(data);
+
+  console.log("---------------------------------------------");
+
+  return [
+    data, // TODO Buradaki değişkeni güncelle
+    (param: any | SetterCurrentStateFuncType): void => {
+      console.log("reactjs_states: ", reactjs_states);
+      // TODO Burayı implement et
+
+      if (typeof param === "function") {
+        console.log("Setter fonksiyona fonksiyon gönderilmiş.");
+        reactjs_states[current_index] = param(reactjs_states[current_index]);
+      } else {
+        console.log("Setter fonksiyona değer gönderilmiş.");
+        reactjs_states[current_index] = param;
+      }
+
+      console.log("reactjs_states: ", reactjs_states);
+      console.log("---------------------------------------------");
+    },
+  ];
+};
+
+//const [counter, setCounter] = useState();
 const [counter, setCounter] = useState(0);
-const [user, setUser] = useState({
+const [student, setStudent] = useState({
   id: 1,
   firstname: "test user",
 });
 
 setCounter(counter + 1);
 setCounter(counter + 1);
+setCounter(counter + 1);
+setCounter(counter + 1);
+setCounter(counter + 1);
+setCounter(counter + 1);
 
 setCounter((currentState) => {
+  console.log("setCounter fonksiyonuna gönderilen birinci fonksiyon");
   return currentState + 1;
 });
 
 setCounter((currentState) => {
+  console.log("setCounter fonksiyonuna gönderilen ikinci fonksiyon");
   return currentState + 1;
 });
+
+setCounter((currentState) => {
+  console.log("setCounter fonksiyonuna gönderilen üçüncü fonksiyon");
+  return currentState + 1;
+});
+
+setCounter((currentState) => {
+  console.log("setCounter fonksiyonuna gönderilen dördüncü fonksiyon");
+  return currentState + 1;
+});
+
+////////////////////////////////////////////////////////////////////
+//// Tam olarak bu satıra kadar tekrar ettiğinizde fonksiyonlar ////
+//// ile yapılabilecek işlemlerin                               ////
+//// yüzde 95'ini öğrenmiş olursunuz.                           ////
+////////////////////////////////////////////////////////////////////
 
 // setUser fonksiyonunu kullanmanın iki yöntemi vardır.
 // birincisi doğrudan değer göndermek
-setUser({
+setStudent({
   id: 2,
   firstname: "örnek kullanıcı",
 });
 
 // ikincisi fonksiyon göndermek
-setUser((currentState) => {
+setStudent((currentState) => {
+  console.log("setStudent fonksiyonuna gönderilen birinci fonksiyon");
+
   return {
     ...currentState,
     firstname: "örnek kullanıcı 2",
