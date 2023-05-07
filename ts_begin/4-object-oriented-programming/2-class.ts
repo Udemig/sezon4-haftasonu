@@ -1,3 +1,7 @@
+/**
+ * TODO: OOP ile ilgili genel açıklamalar buraya yazılacak.
+ */
+
 enum TractionTypeEnum {
   FrontTraction,
   BackTraction,
@@ -6,14 +10,38 @@ enum TractionTypeEnum {
 
 class HandCrankedVehicle {
   // özellikler yani property'ler class'ın en üst kısmında tanımlanır.
-  public wheel_count: number;
-  public traction_type: TractionTypeEnum;
+
+  static example_static_property: number = 10;
+
+  static example_static_function() {
+    console.log(
+      "HandCranckedVehicle içerisinde oluşturulan static fonksiyon çağırıldı."
+    );
+  }
+
+  /**
+   * Bir property veya fonksiyon için erişim kısıtlaması (access modifier) belirtebiliriz.
+   * OOP'de üç türlü access modifier vardır. Bunlar: public, protected, private
+   *
+   * public: Heryerden erişilebilir.
+   * protected: Kendi class'ından ve extend eden class'tan erişilebilir, dışarıdan erişilemez.
+   * private: Sadece kendi class'ından erişilebilir, extend eden class'tan ve dışarıdan erişilemez.
+   */
+  protected chassis_number: string;
+  protected wheel_count: number;
+
+  traction_type: TractionTypeEnum;
   color;
   engine_power;
   fuel_type;
   brand;
   model;
-  seat_count;
+  seat_count: number = 0;
+
+  max_oil_volume: number;
+  current_oil_volume: number;
+
+  is_engine_started: boolean = false;
 
   owner: string;
 
@@ -33,6 +61,8 @@ class HandCrankedVehicle {
     console.log(`Yeni instance oluşturuluyor. Owner: ${owner_name}`);
 
     this.owner = owner_name;
+    this.is_engine_started = false;
+    //this.current_oil_volume = 0;
   }
 
   // TODO Setter fonksiyonlar için geri dönüş türü hakkında ek bilgiler verilecek.
@@ -44,8 +74,24 @@ class HandCrankedVehicle {
     return this;
   }
 
-  getWheelCount(): number {
+  public getWheelCount(): number {
     return this.wheel_count;
+  }
+
+  get wheelCount(): number {
+    console.log("get wheelCount function called.");
+
+    return this.wheel_count;
+  }
+
+  set wheelCount(param: number) {
+    console.log("set wheelCount function called, param: ", param);
+
+    if (param < 4 || param > 8) {
+      throw new Error("Wrong wheel count passed.");
+    }
+
+    this.wheel_count = param;
   }
 
   setTractionType(traction_type: TractionTypeEnum): HandCrankedVehicle {
@@ -75,18 +121,22 @@ class HandCrankedVehicle {
     //    );
 
     if (arm_power > 5) {
+      this.is_engine_started = true;
       return true;
     } else {
+      this.is_engine_started = false;
       return false;
     }
   }
 }
 
+HandCrankedVehicle.example_static_property;
+HandCrankedVehicle.example_static_function();
+
 /**
  * Class'lar bir kez tanımlanır sonra birden fazla kez kullanılır. Class'ların kullanılabilmesi için
  * instance'lar (kopya) oluşturulması gerekir. Instance oluşturulma işlemini ise `new` keywordü yapar.
  */
-
 const emir_hand_cranked_vehicle = new HandCrankedVehicle("emir");
 const furkan_old_car = new HandCrankedVehicle("furkan");
 
@@ -104,7 +154,11 @@ furkan_old_car
   .setWheelCount(6)
   .setTractionType(TractionTypeEnum.AllWheelTraction);
 
-furkan_old_car.wheel_count = 5;
+furkan_old_car.wheelCount = 8;
+console.log(">> GET wheelCount: ", furkan_old_car.wheelCount);
+
+// wheel_count property'sinin access modifier özelliği `protected` olduğu için dışarıdan erişilemez.
+//furkan_old_car.wheel_count = 5;
 furkan_old_car.traction_type = TractionTypeEnum.AllWheelTraction;
 
 console.log(
@@ -116,3 +170,38 @@ console.log(
   "furkanın arabasının tekerlek sayısı: ",
   furkan_old_car.getWheelCount()
 );
+
+class WithStarterMotorVehicle extends HandCrankedVehicle {
+  max_battery_volume: number;
+  current_battery_volume: number;
+
+  constructor(owner_name: string, oil_volume: number, battery_volume: number) {
+    super(owner_name);
+
+    this.max_oil_volume = 30;
+    this.current_oil_volume = oil_volume;
+
+    this.max_battery_volume = 400;
+    this.current_battery_volume = battery_volume;
+  }
+
+  turn_the_ignition(): boolean {
+    // TODO Fill here.
+
+    console.log(">> Current oil volume", this.current_oil_volume);
+
+    if (this.current_oil_volume <= 0) {
+      throw new Error("Not enough fuel.");
+    }
+
+    if (this.current_battery_volume <= 20) {
+      throw new Error("Not enough battery energy.");
+    }
+
+    this.is_engine_started = true;
+    return true;
+  }
+}
+
+const omer_old_car = new WithStarterMotorVehicle("ömer", 2, 10);
+console.log("ömer arabayı çalıştırıyor:", omer_old_car.turn_the_ignition());
