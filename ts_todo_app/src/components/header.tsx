@@ -31,18 +31,24 @@ export default function Header() {
           <Link to={"/"} className="me-3 py-2 text-dark text-decoration-none">
             Main Page
           </Link>
+
           <Link
             to={"todo"}
             className="me-3 py-2 text-dark text-decoration-none"
           >
             Todo Page
           </Link>
-          <a className="me-3 py-2 text-dark text-decoration-none" href="#">
-            Support
-          </a>
-          <a className="py-2 text-dark text-decoration-none" href="#">
-            Pricing
-          </a>
+
+          <Link
+            to={"jsonplaceholder"}
+            className="me-3 py-2 text-dark text-decoration-none"
+          >
+            Json Placeholder
+          </Link>
+
+          <Link to="about-us" className="py-2 text-dark text-decoration-none">
+            About Us
+          </Link>
         </nav>
       </div>
     </header>
