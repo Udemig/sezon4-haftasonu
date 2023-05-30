@@ -5,16 +5,18 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MainPage from "./pages/main-page";
 import TodoPage from "./pages/todo-page/todo-page";
 import JsonPlaceholderPage from "./pages/json-placeholder-page";
+import JsonPlaceholderUserDetailPage from "./pages/json-placeholder-user-detail-page";
+import JsonPlaceholderAlbumDetailPage from "./pages/json-placeholder-album-detail-page";
+import JsonPlaceholderPostDetailPage from "./pages/json-placeholder-post-detail-page";
+import useApi from "./hooks/useApi";
+import axios from "axios";
 
 function App() {
   /*
   Adres yapımız şu şekilde olacak:
     /jsonplaceholder
-    /jsonplaceholder/user
     /jsonplaceholder/user/[userId]/
-    /jsonplaceholder/user/[userId]/albums
     /jsonplaceholder/user/[userId]/albums/[albumId]
-    /jsonplaceholder/user/[userId]/posts
     /jsonplaceholder/user/[userId]/posts/[postId]
   */
 
@@ -30,10 +32,17 @@ function App() {
           <Route path="jsonplaceholder">
             <Route index element={<JsonPlaceholderPage />} />
 
-            <Route path="user">
+            <Route path="user/:userId">
+              <Route index element={<JsonPlaceholderUserDetailPage />} />
+
               <Route
-                path=":userId"
-                element={<JsonPlaceholderUserDetailsPage />}
+                path="albums/:albumId"
+                element={<JsonPlaceholderAlbumDetailPage />}
+              />
+
+              <Route
+                path="posts/:postId"
+                element={<JsonPlaceholderPostDetailPage />}
               />
             </Route>
           </Route>
