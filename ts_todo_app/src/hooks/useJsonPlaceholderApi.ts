@@ -31,6 +31,11 @@ export type JsonPlaceholderAlbumType = {
   title: string;
 };
 
+// code review kısmında kod tekrarları bulunur ve çözülür.
+export type JsonPlaceholderPostType = JsonPlaceholderAlbumType & {
+  body: string;
+};
+
 export class JsonPlaceholderApi {
   private readonly axiosClient: Axios;
 
@@ -94,17 +99,14 @@ export class JsonPlaceholderApi {
   }
 
   async posts(userId?: number, start?: number, limit?: number) {
-    // TODO any türünü belirle.
-    let result: AxiosResponse<any[]> = await this.axiosClient.get<any[]>(
-      "posts",
-      {
+    let result: AxiosResponse<JsonPlaceholderPostType[]> =
+      await this.axiosClient.get<JsonPlaceholderPostType[]>("posts", {
         params: {
           userId: userId,
           _start: start,
           _limit: limit,
         },
-      }
-    );
+      });
 
     return result.data;
   }
