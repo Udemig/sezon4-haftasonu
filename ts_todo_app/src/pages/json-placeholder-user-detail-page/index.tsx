@@ -8,6 +8,7 @@ import useJsonPlaceholderApi, {
 import Loading from "../../components/loading";
 import { Col, Row } from "react-bootstrap";
 import Box from "./components/box";
+import UserInfo from "./components/user-info";
 
 type UserDetailParamType = {
   userId: string | undefined;
@@ -28,46 +29,58 @@ export default function JsonPlaceholderUserDetailPage() {
   console.log(">> PARAMS", params);
   // >> PARAMS {userId: '5'}
 
+  if (!params.userId) {
+    return <>User id bilgisi bulunamadı, lütfen hatayı bize mail atınız.</>;
+  }
+
   useEffect(() => {
     (async () => {
       // burada api çağır
-      if (params.userId) {
-        console.log(">> data isteğine başlıyoruz...");
+      console.log(">> data isteğine başlıyoruz...");
 
-        // bütün promise'leri bir diziye aktarıyoruz
-        let promises = [];
-        promises.push(api.getUser(parseInt(params.userId)));
-        promises.push(api.albums(parseInt(params.userId)));
-        promises.push(api.posts(parseInt(params.userId)));
-        // ardından tüm bu promise'leri tek seferde çalıştırıyoruz.
-        // inspect element ekranındayken network kısmına geldiğimizde
-        // tüm requestlerin aynı anda başlatıldığını görebiliriz.
-        // Bu durumda toplam bekleme süresi yaklaşık 2 saniye civarındadır.
-        let results = await Promise.all(promises);
-        console.log(">> responselar: ", results);
+      // bütün promise'leri bir diziye aktarıyoruz
+      let promises = [];
+      promises.push(api.getUser(parseInt(params.userId as string)));
+      promises.push(api.albums(parseInt(params.userId as string)));
+      promises.push(api.posts(parseInt(params.userId as string)));
+      // ardından tüm bu promise'leri tek seferde çalıştırıyoruz.
+      // inspect element ekranındayken network kısmına geldiğimizde
+      // tüm requestlerin aynı anda başlatıldığını görebiliriz.
+      // Bu durumda toplam bekleme süresi yaklaşık 2 saniye civarındadır.
+      let results = await Promise.all(promises);
+      console.log(">> responselar: ", results);
 
-        // Tüm datalar geldi, ilgili dataları doğru type'ları belirterek
-        // ilgili state'lere set ediyoruz.
-        setUser(results[0] as JsonPlaceholderUserType);
-        setAlbums(results[1] as JsonPlaceholderAlbumType[]);
-        setPosts(results[2] as JsonPlaceholderPostType[]);
+      // Tüm datalar geldi, ilgili dataları doğru type'ları belirterek
+      // ilgili state'lere set ediyoruz.
+      setUser(results[0] as JsonPlaceholderUserType);
+      setAlbums(results[1] as JsonPlaceholderAlbumType[]);
+      setPosts(results[2] as JsonPlaceholderPostType[]);
 
-        // Tüm datalar geldi, o zaman initialized state'ini true yap.
-        // setInitialized ifadesini en son çağırmak gerekiyor aksi halde
-        // yukarıdaki state'ler set edilmemiş olur ve hata alırız.
-        setInitialized(true);
+      // Tüm datalar geldi, o zaman initialized state'ini true yap.
+      // setInitialized ifadesini en son çağırmak gerekiyor aksi halde
+      // yukarıdaki state'ler set edilmemiş olur ve hata alırız.
+      setInitialized(true);
 
-        // await'leri sırayla beklersek bu çok uzun sürer. Tüm requestler
-        // sırayla çalışır ve toplamda bekleme süresi en az 6 saniyedir.
-        //let userDetail = await api.getUser(parseInt(params.userId));
-        //let albums = await api.albums(parseInt(params.userId));
-        //let posts = await api.posts(parseInt(params.userId));
-        //console.log(">> responselar: ", userDetail, albums, posts);
-      }
+      // await'leri sırayla beklersek bu çok uzun sürer. Tüm requestler
+      // sırayla çalışır ve toplamda bekleme süresi en az 6 saniyedir.
+      //let userDetail = await api.getUser(parseInt(params.userId));
+      //let albums = await api.albums(parseInt(params.userId));
+      //let posts = await api.posts(parseInt(params.userId));
+      //console.log(">> responselar: ", userDetail, albums, posts);
     })();
   }, []);
 
   console.log(">> DATALAR", user, albums, posts);
+
+  //if (user && albums && posts) {
+  //  return (
+  //    <>
+  //      <h1>User list</h1>
+  //    </>
+  //  );
+  //} else {
+  //  return <>Loading...</>;
+  //}
 
   if (!initialized) {
     return (
@@ -82,24 +95,8 @@ export default function JsonPlaceholderUserDetailPage() {
       <div className="p-3 pb-md-4 mx-auto text-center">
         <h1 className="display-4 fw-normal">User Details</h1>
       </div>
-      <Row>
-        <Col sm="3">
-          <strong>Name: </strong>
-          {user?.name}
-        </Col>
-        <Col sm="3">
-          <strong>Email: </strong>
-          {user?.email}
-        </Col>
-        <Col sm="3">
-          <strong>Phone: </strong>
-          {user?.phone}
-        </Col>
-        <Col sm="3">
-          <strong>Website: </strong>
-          {user?.website}
-        </Col>
-      </Row>
+
+      <UserInfo user={user as JsonPlaceholderUserType} />
 
       <hr />
 

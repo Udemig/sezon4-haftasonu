@@ -36,6 +36,14 @@ export type JsonPlaceholderPostType = JsonPlaceholderAlbumType & {
   body: string;
 };
 
+export type JsonPlaceholderAlbumPhotoType = {
+  albumId: number;
+  id: number;
+  title: string;
+  url: string;
+  thumbnailUrl: string;
+};
+
 export class JsonPlaceholderApi {
   private readonly axiosClient: Axios;
 
@@ -98,11 +106,31 @@ export class JsonPlaceholderApi {
     return result.data;
   }
 
+  async getAlbum(albumId: number): Promise<JsonPlaceholderAlbumType> {
+    let result: AxiosResponse<JsonPlaceholderAlbumType> =
+      await this.axiosClient.get<JsonPlaceholderAlbumType>("albums/" + albumId);
+
+    return result.data;
+  }
+
   async posts(userId?: number, start?: number, limit?: number) {
     let result: AxiosResponse<JsonPlaceholderPostType[]> =
       await this.axiosClient.get<JsonPlaceholderPostType[]>("posts", {
         params: {
           userId: userId,
+          _start: start,
+          _limit: limit,
+        },
+      });
+
+    return result.data;
+  }
+
+  async albumPhotos(albumId?: number, start?: number, limit?: number) {
+    let result: AxiosResponse<JsonPlaceholderAlbumPhotoType[]> =
+      await this.axiosClient.get<JsonPlaceholderAlbumPhotoType[]>("photos", {
+        params: {
+          albumId: albumId,
           _start: start,
           _limit: limit,
         },
