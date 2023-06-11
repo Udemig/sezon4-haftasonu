@@ -7,30 +7,48 @@ import { AxiosResponse } from "axios";
 import { Card, Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Loading from "../../components/loading";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import { JHolderUserStateType } from "../../redux/jsonplaceholderUserSlice";
+import { setUsers } from "../../redux/jsonplaceholderUserSlice";
 
 export default function JsonPlaceholderPage() {
   const api: JsonPlaceholderApi = useJsonPlaceholderApi();
-  const [users, setUsers] = useState<JsonPlaceholderUserType[] | null>(null);
+
+  const dispatch = useDispatch();
+  const jholderUser: JHolderUserStateType = useSelector(
+    (state: RootState) => state.jholderUser
+  );
+
+  console.log(">> Jholder user", jholderUser);
+  // >> Jholder user {users: null}
 
   useEffect(() => {
     (async () => {
       // burası immediate call function içeriğidir
 
-      console.log("Api isteğinde bulunacağız...");
+      // Eğer state'imizde data yoksa api'den datayı al ve state'e gönder.
+      if (jholderUser.users === null) {
+        console.log("Api isteğinde bulunacağız...");
 
-      const result: AxiosResponse<JsonPlaceholderUserType[]> =
-        await api.users();
+        const result: AxiosResponse<JsonPlaceholderUserType[]> =
+          await api.users();
 
-      console.log("Result:", result.data);
+        console.log("Result:", result.data);
 
-      setUsers(result.data);
+        dispatch(setUsers(result.data));
+      }
     })();
   }, []);
 
-  if (users === null) {
+  if (jholderUser.users === null) {
     return (
       <>
-        <Loading />
+        <Row>
+          <Col sm="12">
+            <Loading />
+          </Col>
+        </Row>
       </>
     );
   }
@@ -45,7 +63,7 @@ export default function JsonPlaceholderPage() {
       <Row>
         {/* ternary operator ile loading ve user listesini göster */}
 
-        {users.map((user, index) => {
+        {jholderUser.users.map((user, index) => {
           return (
             <Col sm="3">
               <Card className="mb-4 rounded-3 shadow-sm border-primary">

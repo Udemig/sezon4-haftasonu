@@ -20,6 +20,8 @@ export const jsonplaceholderUserSlice = createSlice({
   initialState,
   reducers: {
     setUsers: (state, action: PayloadAction<JsonPlaceholderUserType[]>) => {
+      console.log(">> setUsers reducer fonksiyonu çağırıldı", action);
+
       state.users = action.payload;
     },
     removeUsers: (state) => {

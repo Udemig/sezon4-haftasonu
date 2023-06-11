@@ -9,12 +9,16 @@ import Loading from "../../components/loading";
 import { Col, Row } from "react-bootstrap";
 import Box from "./components/box";
 import UserInfo from "./components/user-info";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 type UserDetailParamType = {
   userId: string | undefined;
 };
 
 export default function JsonPlaceholderUserDetailPage() {
+  const jholderUser = useSelector((state: RootState) => state.jholderUser);
+
   const [user, setUser] = useState<JsonPlaceholderUserType | null>(null);
   const [albums, setAlbums] = useState<JsonPlaceholderAlbumType[] | null>(null);
   const [posts, setPosts] = useState<JsonPlaceholderPostType[] | null>(null);
@@ -40,7 +44,22 @@ export default function JsonPlaceholderUserDetailPage() {
 
       // bütün promise'leri bir diziye aktarıyoruz
       let promises = [];
-      promises.push(api.getUser(parseInt(params.userId as string)));
+
+      const existUserInState: JsonPlaceholderUserType | undefined =
+        jholderUser.users
+          ? jholderUser.users.find((user) => {
+              return user.id === parseInt(params.userId as string);
+            })
+          : undefined;
+
+      console.log(">> existUserInState", existUserInState);
+
+      promises.push(
+        existUserInState
+          ? existUserInState
+          : api.getUser(parseInt(params.userId as string))
+      );
+
       promises.push(api.albums(parseInt(params.userId as string)));
       promises.push(api.posts(parseInt(params.userId as string)));
       // ardından tüm bu promise'leri tek seferde çalıştırıyoruz.
